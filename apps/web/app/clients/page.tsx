@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { ClientsPage } from '@/pages/Clients';
+import ClientsPage from '@/pageComponents/Clients';
 
 export default function ClientsRoute() {
   return (

@@ -1,8 +1,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../client';
-import { ENDPOINTS } from '../endpoints';
+import api from '@/api/client';
+import { ENDPOINTS } from '@/api/endpoints';
 import type { User, PaginatedResponse } from '@/types';
 
 export const userKeys = {

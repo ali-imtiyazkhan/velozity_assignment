@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { SettingsPage } from '@/pages/Settings';
+import SettingsPage from '@/pageComponents/Settings';
 
 export default function SettingsRoute() {
   return (

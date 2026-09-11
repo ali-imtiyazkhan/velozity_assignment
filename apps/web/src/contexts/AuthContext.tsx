@@ -4,12 +4,13 @@ import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useMe } from '@/api/hooks';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
+import type { User } from '@/types';
 
 interface AuthContextType {
-  user: ReturnType<typeof useAuthStore>['user'];
-  isAuthenticated: ReturnType<typeof useAuthStore>['isAuthenticated'];
-  login: ReturnType<typeof useAuthStore>['login'];
-  logout: ReturnType<typeof useAuthStore>['logout'];
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (accessToken: string, user: User) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

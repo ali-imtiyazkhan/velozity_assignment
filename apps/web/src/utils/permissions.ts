@@ -1,8 +1,10 @@
-import type { User, Role } from '@/types';
+import type { User } from '@/types';
+
+export type Role = 'ADMIN' | 'PROJECT_MANAGER' | 'DEVELOPER';
 
 export function hasRole(user: User | null, roles: Role[]): boolean {
   if (!user) return false;
-  return roles.includes(user.role);
+  return roles.includes(user.role as Role);
 }
 
 export function isAdmin(user: User | null): boolean {
@@ -123,9 +125,9 @@ export const PERMISSIONS = {
   },
 } as const;
 
-export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS][keyof typeof PERMISSIONS[keyof typeof PERMISSIONS]];
+export type Permission = string;
 
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+const ROLE_PERMISSIONS: Record<Role, string[]> = {
   ADMIN: [
     PERMISSIONS.USERS.CREATE,
     PERMISSIONS.USERS.READ,
@@ -178,12 +180,12 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ],
 };
 
-export function getPermissionsForRole(role: Role): Permission[] {
+export function getPermissionsForRole(role: Role): string[] {
   return ROLE_PERMISSIONS[role] || [];
 }
 
-export function hasPermission(user: User | null, permission: Permission): boolean {
+export function hasPermission(user: User | null, permission: string): boolean {
   if (!user) return false;
-  const permissions = getPermissionsForRole(user.role);
+  const permissions = getPermissionsForRole(user.role as Role);
   return permissions.includes(permission);
 }

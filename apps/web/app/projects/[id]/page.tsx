@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { ProjectDetailPage } from '@/pages/ProjectDetail';
+import ProjectDetailPage from '@/pageComponents/ProjectDetail';
 
 export default function ProjectDetailRoute() {
   return (

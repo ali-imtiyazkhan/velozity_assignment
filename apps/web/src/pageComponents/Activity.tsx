@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useActivity } from '@/api/hooks';
-import { Card, CardContent, Badge, Avatar } from '@/components/ui';
+import { Card, CardContent, Badge, Avatar, Input } from '@/components/ui';
 import { formatRelativeTime, formatStatus } from '@/utils/formatters';
 import { cn } from '@/utils/cn';
 

@@ -50,12 +50,12 @@ function getColorFromName(name: string): string {
     'bg-pink-500',
     'bg-rose-500',
   ];
-  
+
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return colors[Math.abs(hash) % colors.length];
+  return colors[Math.abs(hash) % colors.length] ?? "";
 }
 
 export function Avatar({ className, src, alt, name, size = 'md', shape = 'circle', ...props }: AvatarProps) {
@@ -70,7 +70,7 @@ export function Avatar({ className, src, alt, name, size = 'md', shape = 'circle
       >
         <img
           src={src}
-          alt={alt || name || 'Avatar'}
+          alt={alt || name || 'User avatar'}
           className="w-full h-full object-cover"
         />
       </div>

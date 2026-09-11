@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { DashboardPage } from '@/pages/Dashboard';
+import DashboardPage from '@/pageComponents/Dashboard';
 
 export default function DashboardRoute() {
   return (

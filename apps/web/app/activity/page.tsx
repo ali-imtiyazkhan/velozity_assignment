@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { ActivityPage } from '@/pages/Activity';
+import ActivityPage from '@/pageComponents/Activity';
 
 export default function ActivityRoute() {
   return (

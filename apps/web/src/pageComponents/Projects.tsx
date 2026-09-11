@@ -3,14 +3,13 @@
 import { useState } from 'react';
 import { useProjects, useCreateProject, useDeleteProject } from '@/api/hooks';
 import { useClients } from '@/api/hooks';
-import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent, Modal, Badge } from '@/components/ui';
-import { formatDate, formatStatus, formatPriority, getStatusColor, getPriorityColor } from '@/utils/formatters';
+import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent, Modal, Badge, Textarea } from '@/components/ui';
+import { formatDate } from '@/utils/formatters';
 import { cn } from '@/utils/cn';
 import type { CreateProjectInput } from '@/types';
 
 export default function ProjectsPage() {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState<CreateProjectInput>({
     name: '',
@@ -20,7 +19,7 @@ export default function ProjectsPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const { data: projectsData, isLoading, refetch } = useProjects({ search, status: statusFilter });
+  const { data: projectsData, isLoading, refetch } = useProjects({ search });
   const { data: clientsData } = useClients();
   const createProjectMutation = useCreateProject();
   const deleteProjectMutation = useDeleteProject();
@@ -89,19 +88,6 @@ export default function ProjectsPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-xs"
             />
-            <Select
-              placeholder="Filter by status"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              options={[
-                { value: '', label: 'All Statuses' },
-                { value: 'ACTIVE', label: 'Active' },
-                { value: 'COMPLETED', label: 'Completed' },
-                { value: 'ON_HOLD', label: 'On Hold' },
-                { value: 'CANCELLED', label: 'Cancelled' },
-              ]}
-              className="max-w-xs"
-            />
           </div>
         </CardContent>
       </Card>
@@ -124,7 +110,6 @@ export default function ProjectsPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Client</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Manager</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tasks</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created</th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
@@ -149,9 +134,6 @@ export default function ProjectsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm text-gray-900 dark:text-white">{project.manager?.name}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Badge className={getStatusColor(project.status)}>{formatStatus(project.status)}</Badge>
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-sm text-gray-900 dark:text-white">{project._count?.tasks || 0}</span>
@@ -191,12 +173,11 @@ export default function ProjectsPage() {
             error={errors.name}
             placeholder="Enter project name"
           />
-          <Input
+          <Textarea
             label="Description"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="Enter description (optional)"
-            type="textarea"
           />
           <Select
             label="Client"

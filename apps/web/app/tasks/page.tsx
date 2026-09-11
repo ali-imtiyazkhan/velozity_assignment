@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth';
 import { Layout } from '@/components/layout';
-import { TasksPage } from '@/pages/Tasks';
+import TasksPage from '@/pageComponents/Tasks';
 
 export default function TasksRoute() {
   return (

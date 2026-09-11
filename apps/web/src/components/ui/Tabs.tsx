@@ -75,7 +75,7 @@ export function TabsTrigger({ value, children, className, disabled }: TabsTrigge
           panel.hidden = false;
         }
         document.querySelectorAll('[role="tabpanel"]').forEach((p) => {
-          if (p.id !== `panel-${value}`) p.hidden = true;
+          if (p.id !== `panel-${value}`) (p as HTMLElement).hidden = true;
         });
       }}
     >

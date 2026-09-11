@@ -45,7 +45,6 @@ export default function ProjectDetailPage() {
           <p className="text-gray-500 dark:text-gray-400 mt-1">{project.description}</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={getStatusColor(project.status)}>{formatStatus(project.status)}</Badge>
           <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
             {project._count?.tasks || 0} tasks
           </Badge>

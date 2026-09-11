@@ -6,7 +6,18 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/store/*": ["./src/store/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/api/*": ["./src/api/*"],
+      "@/pageComponents/*": ["./src/pageComponents/*"]
+    }
   },
   "include": [
     "**/*.ts",

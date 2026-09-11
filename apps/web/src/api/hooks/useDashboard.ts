@@ -1,8 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import api from '../client';
-import { ENDPOINTS } from '../endpoints';
+import api from '@/api/client';
+import { ENDPOINTS } from '@/api/endpoints';
 import type { PaginatedResponse } from '@/types';
 
 export const dashboardKeys = {
