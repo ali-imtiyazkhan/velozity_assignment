@@ -1,0 +1,8 @@
+export { default as LoginPage } from './Login';
+export { default as DashboardPage } from './Dashboard';
+export { default as ProjectsPage } from './Projects';
+export { default as ProjectDetailPage } from './ProjectDetail';
+export { default as TasksPage } from './Tasks';
+export { default as SettingsPage } from './Settings';
+export { default as ClientsPage } from './Clients';
+export { default as ActivityPage } from './Activity';

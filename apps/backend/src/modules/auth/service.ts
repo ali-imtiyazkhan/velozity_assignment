@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken, type TokenPayload } from '../../shared/utils/jwt';
 import { UnauthorizedError, ConflictError, NotFoundError } from '../../shared/errors/AppError';
 
+export type { Role };
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -14,7 +16,7 @@ export interface UserResponse {
   email: string;
   name: string;
   role: Role;
-  avatarUrl?: string;
+  avatarUrl: string | null;
   createdAt: Date;
 }
 
@@ -66,7 +68,7 @@ export async function registerUser(data: {
   };
 
   return {
-    user: { id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt },
+    user: { id: user.id, email: user.email, name: user.name, role: user.role, avatarUrl: user.avatarUrl, createdAt: user.createdAt },
     tokens,
   };
 }
@@ -93,7 +95,7 @@ export async function loginUser(email: string, password: string): Promise<{ user
   };
 
   return {
-    user: { id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt },
+    user: { id: user.id, email: user.email, name: user.name, role: user.role, avatarUrl: user.avatarUrl, createdAt: user.createdAt },
     tokens,
   };
 }
