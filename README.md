@@ -1,159 +1,216 @@
-# Turborepo starter
+# Velozity - Client Project Dashboard
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern, full-stack project management dashboard with real-time collaboration, role-based access control, and background job processing.
 
-## Using this example
+## 🏗️ Architecture
 
-Run the following command:
+### Tech Stack
 
-```sh
-npx create-turbo@latest
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Node.js + Express + TypeScript |
+| **Database** | PostgreSQL + Prisma ORM |
+| **Real-time** | Socket.io |
+| **Background Jobs** | Bull + Redis |
+| **Auth** | JWT (access + refresh) + HttpOnly cookies |
+| **Validation** | Zod |
+| **Frontend** | React 18 + TypeScript + Vite + TanStack Query + Zustand |
+
+### Project Structure
+
+```
+velozity/
+├── apps/
+│   ├── backend/          # Express API server
+│   └── web/              # React frontend
+├── packages/
+│   ├── db/               # Prisma schema & client
+│   ├── ui/               # Shared UI components
+│   ├── eslint-config/    # ESLint configurations
+│   └── typescript-config/ # TypeScript configurations
+└── implementation_plan.md # Detailed implementation guide
 ```
 
-## What's inside?
+## 🚀 Quick Start
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js 18+
+- PostgreSQL 15+
+- Redis 7+
+- Bun (recommended) or npm/yarn
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Environment Variables
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Create `.env` files in the appropriate locations:
 
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+**packages/db/.env**
+```env
+DATABASE_URL="postgresql://velozity:velozity@localhost:5432/velozity"
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-bun exec turbo build
-bun exec turbo build
+**apps/backend/.env**
+```env
+DATABASE_URL="postgresql://velozity:velozity@localhost:5432/velozity"
+REDIS_URL="redis://localhost:6379"
+JWT_ACCESS_SECRET="your-access-secret-32-chars-min"
+JWT_REFRESH_SECRET="your-refresh-secret-32-chars-min"
+NODE_ENV="development"
+PORT=3001
+FRONTEND_URL="http://localhost:5173"
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+**apps/web/.env**
+```env
+VITE_API_URL=http://localhost:3001
+VITE_SOCKET_URL=http://localhost:3001
 ```
 
-Without global `turbo`:
+### Installation
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+```bash
+# Install dependencies
+bun install
+
+# Generate Prisma client
+cd packages/db && bunx prisma generate
+
+# Run migrations
+bunx prisma migrate dev
+
+# Seed database
+bunx prisma db seed
+
+# Start development servers
+bun run dev
 ```
 
-### Develop
+### Docker (Alternative)
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+docker-compose up -d
 ```
 
-Without global `turbo`, use your package manager:
+## 👥 User Roles
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
+| Role | Permissions |
+|------|-------------|
+| **Admin** | Full system access, user management, all projects |
+| **Project Manager** | Create/manage own projects, assign tasks, review tasks |
+| **Developer** | View assigned tasks, update status, view project activity |
+
+## 🔐 Authentication
+
+- **Access Token**: 15 min expiry, JWT in Authorization header
+- **Refresh Token**: 7 days expiry, HttpOnly + Secure + SameSite=Strict cookie
+- **Token Rotation**: New refresh token issued on each refresh
+
+### API Endpoints
+
+```
+POST   /auth/register     # Register new user
+POST   /auth/login        # Login
+POST   /auth/refresh      # Refresh access token
+POST   /auth/logout       # Logout
+GET    /auth/me           # Get current user
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## 📊 Features
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### Core Modules
+- **Users** - Admin-only CRUD with role management
+- **Clients** - Admin-only client management
+- **Projects** - Full CRUD with PM ownership, stats
+- **Tasks** - CRUD with status transitions, priorities, assignments
+- **Activity** - Role-filtered activity logs with real-time updates
+- **Notifications** - In-app notifications with read/unread, bulk actions
+- **Dashboard** - Role-specific statistics and insights
 
-```sh
-turbo dev --filter=web
+### Real-time (Socket.io)
+- Project rooms for collaborative viewing
+- Activity feed broadcasting with role filtering
+- Real-time notifications
+- Presence system (online/offline users)
+- Missed events catch-up on reconnect
+
+### Background Jobs
+- Hourly overdue task detection
+- Automatic activity log creation
+- Real-time notification emission for overdue tasks
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd apps/backend && bun test
+
+# Frontend tests
+cd apps/web && bun test
 ```
 
-Without global `turbo`:
+## 📦 Building
 
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
+```bash
+# Build all packages
+bun run build
+
+# Build specific app
+bun run build --filter=web
+bun run build --filter=backend
 ```
 
-### Remote Caching
+## 🚢 Deployment
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Backend (Railway/Render)
+1. Set environment variables
+2. Connect PostgreSQL and Redis
+3. Run `bun run build && bun run start`
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### Frontend (Vercel)
+1. Connect repository
+2. Set `VITE_API_URL` and `VITE_SOCKET_URL`
+3. Deploy
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## 📁 Key Files
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- `implementation_plan.md` - Complete architecture & implementation guide
+- `packages/db/prisma/schema.prisma` - Database schema
+- `apps/backend/src/index.ts` - API entry point
+- `apps/web/src/main.tsx` - Frontend entry point
 
-```sh
-cd my-turborepo
-turbo login
+## 🔧 Development
+
+### Database Commands
+
+```bash
+# Generate client
+bunx prisma generate
+
+# Run migrations
+bunx prisma migrate dev
+
+# Open Prisma Studio
+bunx prisma studio
+
+# Reset database
+bunx prisma migrate reset
 ```
 
-Without global `turbo`, use your package manager:
+### Adding New Models
 
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
+1. Edit `packages/db/prisma/schema.prisma`
+2. Run `bunx prisma migrate dev --name <name>`
+3. Run `bunx prisma generate`
+4. Update backend modules and frontend types
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 📝 License
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+MIT License - see LICENSE file for details.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## 🤝 Contributing
 
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request

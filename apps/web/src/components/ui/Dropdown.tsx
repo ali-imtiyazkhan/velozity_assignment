@@ -11,14 +11,46 @@ export interface DropdownItem {
   disabled?: boolean;
 }
 
+export interface DropdownItemProps {
+  label: string;
+  onClick: () => void;
+  icon?: ReactNode;
+  danger?: boolean;
+  disabled?: boolean;
+  children?: ReactNode;
+}
+
+export function DropdownItem({ label, onClick, icon, danger, disabled, children }: DropdownItemProps) {
+  return (
+    <button
+      onClick={() => {
+        onClick();
+      }}
+      disabled={disabled}
+      role="menuitem"
+      className={cn(
+        'w-full px-4 py-2 text-sm flex items-center gap-2 text-left',
+        'hover:bg-gray-100 dark:hover:bg-gray-700',
+        danger && 'text-red-600 dark:text-red-400',
+        disabled && 'opacity-50 cursor-not-allowed'
+      )}
+    >
+      {icon && <span className="w-4 h-4">{icon}</span>}
+      {label}
+      {children}
+    </button>
+  );
+}
+
 export interface DropdownProps {
   trigger: ReactNode;
-  items: DropdownItem[];
+  items?: DropdownItem[];
+  children?: ReactNode;
   align?: 'left' | 'right';
   className?: string;
 }
 
-export function Dropdown({ trigger, items, align = 'right', className }: DropdownProps) {
+export function Dropdown({ trigger, items = [], children, align = 'right', className }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +104,7 @@ export function Dropdown({ trigger, items, align = 'right', className }: Dropdow
               {item.label}
             </button>
           ))}
+          {children}
         </div>
       )}
     </div>

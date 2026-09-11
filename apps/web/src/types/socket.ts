@@ -62,15 +62,32 @@ export type ClientToServerEvents = {
   'notification:mark-all-read': () => void;
 };
 
+export interface PresenceEvent {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userRole: string;
+  avatarUrl: string | null;
+  onlineAt: string;
+}
+
+export interface TaskStatusEvent {
+  taskId: string;
+  projectId: string;
+  oldStatus: string;
+  newStatus: string;
+  updatedBy: string;
+}
+
 export type ServerToClientEvents = {
   'activity:new': (event: ActivityEvent) => void;
   'activity:catchup': (events: ActivityEvent[]) => void;
   'notification:new': (event: NotificationEvent) => void;
   'notification:read': (data: { notificationId: string }) => void;
-  'notification:unread-count': (data: { count: number }) => void;
-  'presence:online': (data: { userId: string; name: string; avatarUrl?: string }) => void;
-  'presence:offline': (data: { userId: string }) => void;
-  'presence:users': (users: { userId: string; name: string; avatarUrl?: string }[]) => void;
-  'task:status-update': (event: TaskStatusUpdateEvent) => void;
-  'project:update': (event: ProjectUpdateEvent) => void;
+  'notification:count': (data: { count: number }) => void;
+  'presence:user-online': (data: PresenceEvent) => void;
+  'presence:user-offline': (data: PresenceEvent) => void;
+  'presence:online-users': (users: PresenceEvent[]) => void;
+  'task:status-changed': (event: TaskStatusEvent) => void;
+  'project:updated': (event: ProjectUpdateEvent) => void;
 };

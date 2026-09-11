@@ -187,3 +187,79 @@ export interface ApiError {
   message: string;
   error?: string;
 }
+
+export interface AdminDashboardStats {
+  totalUsers: number;
+  totalProjects: number;
+  totalTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  usersByRole: Record<string, number>;
+  recentActivity: ActivityLog[];
+  onlineUsers: number;
+}
+
+export interface PMDashboardStats {
+  myProjects: number;
+  totalTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  upcomingDeadlines: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    priority: string;
+    project: { id: string; name: string };
+  }>;
+  recentActivity: ActivityLog[];
+}
+
+export interface DeveloperDashboardStats {
+  assignedTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  upcomingTasks: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    priority: string;
+    status: string;
+    project: { id: string; name: string };
+  }>;
+  recentActivity: ActivityLog[];
+}
+
+export interface ProjectListItem {
+  id: string;
+  name: string;
+  description?: string;
+  clientId: string;
+  managerId: string;
+  createdAt: string;
+  updatedAt: string;
+  client?: Client;
+  manager?: User;
+  _count?: {
+    tasks: number;
+  };
+}
+
+export interface TaskListItem {
+  id: string;
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  priority: Priority;
+  dueDate: string;
+  isOverdue: boolean;
+  projectId: string;
+  assigneeId?: string;
+  creatorId: string;
+  createdAt: string;
+  updatedAt: string;
+  project?: { id: string; name: string; clientId?: string; managerId?: string };
+  assignee?: { id: string; name: string; email: string; avatarUrl?: string } | null;
+}
