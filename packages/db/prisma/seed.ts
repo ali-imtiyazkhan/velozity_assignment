@@ -9,7 +9,7 @@ async function hashPassword(password: string): Promise<string> {
 async function main() {
   console.log('🌱 Starting seed...');
 
-  // 1. Create Users
+  // Create Users
   console.log('Creating users...');
   const admin = await prisma.user.upsert({
     where: { email: 'admin@velozity.com' },
@@ -89,7 +89,7 @@ async function main() {
 
   console.log(`Created ${2 + 2 + 4} users`);
 
-  // 2. Create Clients
+  // Create Clients
   console.log('Creating clients...');
   const clients = await Promise.all([
     prisma.client.upsert({
@@ -123,7 +123,7 @@ async function main() {
 
   console.log(`Created ${clients.length} clients`);
 
-  // 3. Create Projects
+  // Create Projects
   console.log('Creating projects...');
   const projects = await Promise.all([
     prisma.project.upsert({
@@ -174,7 +174,7 @@ async function main() {
 
   console.log(`Created ${projects.length} projects`);
 
-  // 4. Create Tasks (5+ per project, various statuses)
+  // Create Tasks (5+ per project, various statuses)
   console.log('Creating tasks...');
   const allTasks: Array<{
     title: string;
@@ -187,7 +187,7 @@ async function main() {
     creatorId: string;
   }> = [];
 
-  // Project 1: Website Redesign (pm1, devs[0], devs[1])
+  //  Website Redesign (pm1, devs[0], devs[1])
   allTasks.push(
     {
       title: 'Design System Setup',
@@ -251,7 +251,7 @@ async function main() {
     },
   );
 
-  // Project 2: Mobile App (pm1, devs[2], devs[3])
+  //  Mobile App (pm1, devs[2], devs[3])
   allTasks.push(
     {
       title: 'Project Setup & Configuration',
@@ -305,7 +305,7 @@ async function main() {
     },
   );
 
-  // Project 3: API Integration (pm2, devs[0], devs[2])
+  // API Integration (pm2, devs[0], devs[2])
   allTasks.push(
     {
       title: 'API Gateway Setup',
@@ -359,7 +359,7 @@ async function main() {
     },
   );
 
-  // Project 4: Analytics Dashboard (pm2, devs[1], devs[3])
+  //  Analytics Dashboard (pm2, devs[1], devs[3])
   allTasks.push(
     {
       title: 'Data Pipeline Setup',
@@ -424,7 +424,7 @@ async function main() {
 
   console.log(`Created ${allTasks.length} tasks`);
 
-  // 5. Create Activity Logs
+  // Create Activity Logs
   console.log('Creating activity logs...');
   const activityActions = [
     { action: 'CREATED', entityType: 'TASK', entityId: allTasks[0]?.title },
@@ -481,7 +481,7 @@ async function main() {
 
   console.log('Created activity logs');
 
-  // 6. Create Notifications
+  //  Notifications
   console.log('Creating notifications...');
   const notificationTypes = ['TASK_ASSIGNED', 'TASK_IN_REVIEW', 'TASK_OVERDUE', 'STATUS_CHANGED'];
 
@@ -524,7 +524,7 @@ async function main() {
 
   console.log('Created notifications');
 
-  console.log('✅ Seed completed successfully!');
+  console.log(' Seed completed successfully!');
   console.log(`
 Test Accounts:
 - Admin: admin@velozity.com / password123
@@ -536,7 +536,7 @@ Test Accounts:
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e);
+    console.error(' Seed failed:', e);
     process.exit(1);
   })
   .finally(async () => {
