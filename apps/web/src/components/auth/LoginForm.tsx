@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLogin } from '@/api/hooks';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
+import { setAccessToken } from '@/api/client';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -38,6 +39,7 @@ export function LoginForm() {
       { email, password },
       {
         onSuccess: (data) => {
+          setAccessToken(data.accessToken);
           login(data.accessToken, data.user);
           toast.success('Welcome back!');
           router.push(callbackUrl);

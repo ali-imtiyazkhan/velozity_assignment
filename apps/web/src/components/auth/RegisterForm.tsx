@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useRegister } from '@/api/hooks';
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, Select } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
+import { setAccessToken } from '@/api/client';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Role } from '@/types/api';
@@ -58,6 +59,7 @@ export function RegisterForm() {
       { name: formData.name, email: formData.email, password: formData.password, role: formData.role },
       {
         onSuccess: (data) => {
+          setAccessToken(data.accessToken);
           login(data.accessToken, data.user);
           toast.success('Account created successfully!');
           router.push(callbackUrl);
