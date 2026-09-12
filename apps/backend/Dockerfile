@@ -1,4 +1,4 @@
-FROM oven/bun:1.2-alpine
+FROM oven/bun:canary-alpine
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY packages/db ./packages/db
 COPY packages/typescript-config ./packages/typescript-config
 COPY apps/backend ./apps/backend
 
-RUN bun install
+RUN bun install --registry=https://registry.npmjs.org
 
 EXPOSE 3001
 

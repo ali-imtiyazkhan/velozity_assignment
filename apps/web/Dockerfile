@@ -1,4 +1,4 @@
-FROM oven/bun:1.2-alpine
+FROM oven/bun:canary-alpine
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ COPY packages/ui ./packages/ui
 COPY packages/eslint-config ./packages/eslint-config
 COPY apps/web ./apps/web
 
-RUN bun install
+RUN bun install --registry=https://registry.npmjs.org
 
 EXPOSE 3000
 

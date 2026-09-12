@@ -464,7 +464,7 @@ async function main() {
       data: {
         action: a.action,
         entityType: a.entityType,
-        entityId: a.entityId,
+        entityId: a.entityId ?? "",
         oldValue: a.oldValue || null,
         newValue: a.newValue || null,
         userId: [admin.id, pm1.id, pm2.id, ...devs.map(d => d.id)][i % (2 + 2 + 4)] ?? "",

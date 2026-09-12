@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: velozity-backend
+    runtime: docker
+    dockerfilePath: ./apps/backend/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: FRONTEND_URL
+        value: https://velozity-frontend.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: velozity-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: velozity-redis
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+    healthCheckPath: /health
+    autoDeploy: true
+
+  - type: redis
+    name: velozity-redis
+    plan: free
+    region: oregon
+
+databases:
+  - name: velozity-db
+    plan: free
+    region: oregon

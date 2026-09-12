@@ -1,0 +1,17 @@
+{
+  "buildCommand": "cd apps/web && bun run build",
+  "devCommand": "cd apps/web && bun run dev",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "rootDirectory": "apps/web",
+  "functions": {
+    "src/app/**/*.tsx": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://velozity-backend.onrender.com",
+    "NEXT_PUBLIC_WS_URL": "https://velozity-backend.onrender.com"
+  }
+}

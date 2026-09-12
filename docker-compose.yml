@@ -48,7 +48,9 @@ services:
         condition: service_healthy
     volumes:
       - ./apps/backend:/app
+      - ./packages:/app/packages
       - /app/node_modules
+      - /app/packages/db/node_modules
 
   frontend:
     build:
@@ -63,7 +65,9 @@ services:
       - backend
     volumes:
       - ./apps/web:/app
+      - ./packages:/app/packages
       - /app/node_modules
+      - /app/apps/web/node_modules
       - /app/.next
 
 volumes:
