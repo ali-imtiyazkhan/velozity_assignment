@@ -4,9 +4,9 @@ import { ChevronDown, ChevronRight, Menu, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
-import { Logo } from './Logo';
-import { Button } from './Button';
-import { Dropdown, DropdownItem } from './Dropdown';
+import { Logo } from '../ui/Logo';
+import { Button } from '../ui/Button';
+import { Dropdown, DropdownItem } from '../ui/Dropdown';
 
 const ORANGE = '#ef4d23';
 
