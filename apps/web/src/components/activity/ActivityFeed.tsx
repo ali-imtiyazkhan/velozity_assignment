@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
-import { useSocketEvents } from '../../hooks/useSocket';
+import { useSocket } from '../../hooks/useSocket';
 import { ActivityItem } from './ActivityItem';
 import type { ActivityEvent } from '../../types/socket';
 
@@ -12,6 +14,7 @@ interface ActivityFeedProps {
 export function ActivityFeed({ projectId, limit = 20, autoRefresh = true }: ActivityFeedProps) {
   const [activities, setActivities] = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const { socket, fetchActivity, joinProject, leaveProject } = useSocket();
 
   const handleCatchup = useCallback((events: ActivityEvent[]) => {
     setActivities(events);
@@ -25,31 +28,41 @@ export function ActivityFeed({ projectId, limit = 20, autoRefresh = true }: Acti
     });
   }, []);
 
-  useSocketEvents(undefined, undefined, undefined, undefined, undefined, handleCatchup);
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('activity:new', handleNewActivity);
+    socket.on('activity:catchup', handleCatchup);
+
+    return () => {
+      socket.off('activity:new', handleNewActivity);
+      socket.off('activity:catchup', handleCatchup);
+    };
+  }, [socket, handleNewActivity, handleCatchup]);
 
   useEffect(() => {
-    const { fetchActivity } = require('../../hooks/useSocket').useSocket();
-    if (fetchActivity) {
+    if (projectId) {
+      joinProject(projectId);
       fetchActivity(projectId, limit);
     }
-  }, [projectId, limit]);
+    return () => {
+      if (projectId) leaveProject(projectId);
+    };
+  }, [projectId, limit, joinProject, leaveProject, fetchActivity]);
 
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
-      const { fetchActivity } = require('../../hooks/useSocket').useSocket();
-      if (fetchActivity) {
-        fetchActivity(projectId, limit);
-      }
+      if (projectId) fetchActivity(projectId, limit);
     }, 30000);
     return () => clearInterval(interval);
-  }, [projectId, limit, autoRefresh]);
+  }, [projectId, limit, autoRefresh, fetchActivity]);
 
   if (loading) {
     return (
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-16 animate-pulse bg-gray-100 rounded-lg" />
+          <div key={i} className="h-16 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg" />
         ))}
       </div>
     );
@@ -57,7 +70,7 @@ export function ActivityFeed({ projectId, limit = 20, autoRefresh = true }: Acti
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
         <p>No activity yet</p>
         <p className="text-sm">Activity will appear here when changes are made</p>
       </div>

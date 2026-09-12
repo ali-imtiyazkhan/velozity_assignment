@@ -1,11 +1,12 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useProject, useProjectTasks, useProjectActivity } from '@/api/hooks';
+import { useProject, useProjectTasks } from '@/api/hooks';
 import { Card, CardHeader, CardTitle, CardContent, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { formatDate, formatRelativeTime, formatStatus, formatPriority, getStatusColor, getPriorityColor } from '@/utils/formatters';
 import { cn } from '@/utils/cn';
 import { Avatar } from '@/components/ui';
+import { ActivityFeed } from '@/components/activity/ActivityFeed';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -13,7 +14,6 @@ export default function ProjectDetailPage() {
 
   const { data: project, isLoading: projectLoading } = useProject(projectId);
   const { data: tasksData, isLoading: tasksLoading } = useProjectTasks(projectId);
-  const { data: activityData, isLoading: activityLoading } = useProjectActivity(projectId);
 
   if (projectLoading) {
     return (
@@ -35,7 +35,6 @@ export default function ProjectDetailPage() {
   }
 
   const tasks = tasksData?.data || [];
-  const activity = activityData || [];
 
   return (
     <div className="space-y-6">
@@ -81,7 +80,7 @@ export default function ProjectDetailPage() {
       <Tabs defaultValue="tasks">
         <TabsList className="w-full">
           <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
-          <TabsTrigger value="activity">Activity ({activity.length})</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tasks">
@@ -158,43 +157,8 @@ export default function ProjectDetailPage() {
 
         <TabsContent value="activity">
           <Card>
-            <CardContent className="p-0">
-              {activityLoading ? (
-                <div className="p-4 animate-pulse space-y-4">
-                  {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded" />)}
-                </div>
-              ) : activity.length === 0 ? (
-                <div className="p-12 text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No activity</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Activity will appear here as changes are made.</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {activity.map((item: any) => (
-                    <div key={item.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                      <div className="flex items-start gap-3">
-                        <Avatar name={item.user?.name} size="sm" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900 dark:text-white">
-                            <span className="font-medium">{item.user?.name}</span>{' '}
-                            {item.action.toLowerCase().replace(/_/g, ' ')}
-                            <span className="text-gray-500 dark:text-gray-400 ml-1">{item.entityType.toLowerCase()}</span>
-                          </p>
-                          {item.oldValue && item.newValue && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              Changed from <span className="font-medium">{item.oldValue}</span> to <span className="font-medium">{item.newValue}</span>
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{formatRelativeTime(item.createdAt)}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <CardContent className="p-4">
+              <ActivityFeed projectId={projectId} limit={50} />
             </CardContent>
           </Card>
         </TabsContent>
