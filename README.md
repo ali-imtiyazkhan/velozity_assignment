@@ -292,17 +292,24 @@ bun run build --filter=backend
 
 ## 🚢 Deployment
 
-### Backend (Railway/Render)
-1. Set environment variables
-2. Connect PostgreSQL and Redis
-3. Run `bun run build && bun run start`
+### Backend (Render)
+1. Connect repository to Render
+2. Use `render.yaml` (Blueprint) for automatic setup with PostgreSQL + Redis
+3. Or manually: Create Web Service → Docker → Dockerfile: `./apps/backend/Dockerfile`
+4. Add environment variables (auto-configured via render.yaml)
+5. Deploy
 
 ### Frontend (Vercel)
-1. Connect repository
-2. Set `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SOCKET_URL`
-3. Deploy
+1. Import repository in Vercel
+2. Set **Root Directory** to `apps/web`
+3. Add environment variables:
+   - `NEXT_PUBLIC_API_URL` = your Render backend URL
+   - `NEXT_PUBLIC_WS_URL` = your Render backend URL
+4. Deploy
 
-**Live Demo**: https://velozity-dashboard.vercel.app
+**Live Demo**: https://velozity-assignment-dashboard.vercel.app
+**Backend API**: https://velozity-backend.onrender.com
+**Health Check**: https://velozity-backend.onrender.com/health
 
 ### Docker Production
 ```bash
@@ -344,6 +351,27 @@ bunx prisma migrate reset
 - `packages/db/prisma/schema.prisma` - Database schema
 - `apps/backend/src/index.ts` - API entry point
 - `apps/web/app/layout.tsx` - Frontend entry point with providers
+
+---
+
+## 🌱 Seed Data
+
+The repository includes a seed script that creates:
+
+- **1 Admin** user
+- **2 Project Managers**
+- **4 Developers**
+- **3+ Projects** with 5+ tasks each in various statuses
+- **2+ Overdue tasks** automatically flagged
+- **Pre-existing activity log entries** so the feed is not empty on first load
+- **Notifications** for task assignments and status changes
+
+Run the seed:
+```bash
+cd packages/db && bunx prisma db seed
+```
+
+The seed file is at `packages/db/prisma/seed.ts` and uses the Prisma client to create all required data with proper relationships.
 
 ---
 
