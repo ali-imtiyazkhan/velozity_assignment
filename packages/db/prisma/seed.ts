@@ -413,24 +413,40 @@ async function main() {
     },
   );
 
+  // Create Tasks and capture created tasks with IDs
+  console.log('Creating tasks...');
+  const createdTasks: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    status: TaskStatus;
+    priority: Priority;
+    dueDate: Date;
+    isOverdue: boolean;
+    projectId: string;
+    assigneeId: string | null;
+    creatorId: string;
+  }> = [];
+
   for (const task of allTasks) {
-    await prisma.task.create({
+    const created = await prisma.task.create({
       data: {
         ...task,
         isOverdue: task.dueDate < new Date() && task.status !== TaskStatus.DONE,
       },
     });
+    createdTasks.push(created);
   }
 
-  console.log(`Created ${allTasks.length} tasks`);
+  console.log(`Created ${createdTasks.length} tasks`);
 
   // Create Activity Logs
   console.log('Creating activity logs...');
   const activityActions = [
-    { action: 'CREATED', entityType: 'TASK', entityId: allTasks[0]?.title },
-    { action: 'STATUS_CHANGED', entityType: 'TASK', entityId: allTasks[1]?.title, oldValue: 'TODO', newValue: 'IN_PROGRESS' },
-    { action: 'STATUS_CHANGED', entityType: 'TASK', entityId: allTasks[1]?.title, oldValue: 'IN_PROGRESS', newValue: 'IN_REVIEW' },
-    { action: 'ASSIGNED', entityType: 'TASK', entityId: allTasks[2]?.title, newValue: devs[1].name },
+    { action: 'CREATED', entityType: 'TASK', entityId: createdTasks[0]?.title, taskId: createdTasks[0]?.id },
+    { action: 'STATUS_CHANGED', entityType: 'TASK', entityId: createdTasks[1]?.title, taskId: createdTasks[1]?.id, oldValue: 'TODO', newValue: 'IN_PROGRESS' },
+    { action: 'STATUS_CHANGED', entityType: 'TASK', entityId: createdTasks[1]?.title, taskId: createdTasks[1]?.id, oldValue: 'IN_PROGRESS', newValue: 'IN_REVIEW' },
+    { action: 'ASSIGNED', entityType: 'TASK', entityId: createdTasks[2]?.title, taskId: createdTasks[2]?.id, newValue: devs[1].name },
     { action: 'CREATED', entityType: 'PROJECT', entityId: projects[0].name },
     { action: 'CREATED', entityType: 'CLIENT', entityId: clients[0].name },
   ];
@@ -440,7 +456,7 @@ async function main() {
     if (!a) {
       return;
     }
-    const task = allTasks.find(t => t.title === a.entityId) || allTasks[0];
+    const task = createdTasks.find(t => t.title === a.entityId) || createdTasks[0];
     if (!task) {
       return;
     }
@@ -448,12 +464,12 @@ async function main() {
       data: {
         action: a.action,
         entityType: a.entityType,
-        entityId: task.title,
+        entityId: a.entityId,
         oldValue: a.oldValue || null,
         newValue: a.newValue || null,
         userId: [admin.id, pm1.id, pm2.id, ...devs.map(d => d.id)][i % (2 + 2 + 4)] ?? "",
         projectId: task.projectId,
-        taskId: task.title === a.entityId ? task.title : undefined,
+        taskId: a.taskId,
       },
     });
   }
@@ -461,7 +477,7 @@ async function main() {
   // Add more activity logs for each project
   for (const project of projects) {
     for (let i = 0; i < 3; i++) {
-      const task = allTasks.find(t => t.projectId === project.id);
+      const task = createdTasks.find(t => t.projectId === project.id);
       if (task) {
         await prisma.activityLog.create({
           data: {
@@ -472,7 +488,7 @@ async function main() {
             newValue: i === 1 ? 'IN_PROGRESS' : null,
             userId: project.managerId,
             projectId: project.id,
-            taskId: task.title,
+            taskId: task.id,
           },
         });
       }
@@ -486,7 +502,7 @@ async function main() {
   const notificationTypes = ['TASK_ASSIGNED', 'TASK_IN_REVIEW', 'TASK_OVERDUE', 'STATUS_CHANGED'];
 
   for (const dev of devs) {
-    const devTasks = allTasks.filter(t => t.assigneeId === dev.id);
+    const devTasks = createdTasks.filter(t => t.assigneeId === dev.id);
     for (let i = 0; i < Math.min(3, devTasks.length); i++) {
       const task = devTasks[i];
       await prisma.notification.create({
@@ -495,7 +511,7 @@ async function main() {
           title: 'Test Notification',
           message: `Related to "${task?.title}"`,
           userId: dev.id,
-          taskId: task?.title,
+          taskId: task?.id,
           readAt: i === 0 ? new Date() : null,
         },
       });
@@ -506,7 +522,7 @@ async function main() {
   for (const pm of [pm1, pm2]) {
     const pmProjects = projects.filter(p => p.managerId === pm.id);
     for (const project of pmProjects) {
-      const projectTasks = allTasks.filter(t => t.projectId === project.id);
+      const projectTasks = createdTasks.filter(t => t.projectId === project.id);
       if (projectTasks.length > 0) {
         await prisma.notification.create({
           data: {
@@ -514,7 +530,7 @@ async function main() {
             title: 'Task Ready for Review',
             message: `"${projectTasks[0]?.title}" in "${project.name}" needs review`,
             userId: pm.id,
-            taskId: projectTasks[0]?.title,
+            taskId: projectTasks[0]?.id,
             readAt: null,
           },
         });
