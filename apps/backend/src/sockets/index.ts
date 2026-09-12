@@ -5,7 +5,7 @@ import { setupProjectHandlers } from './handlers/project';
 import { setupActivityHandlers } from './handlers/activity';
 import { setupPresenceHandlers } from './handlers/presence';
 import { setupNotificationHandlers } from './handlers/notifications';
-import { getOnlineUsers } from './handlers/presence';
+import { getOnlineUsers, getOnlineUsersCount } from './handlers/presence';
 import type { AuthenticatedSocket, ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData, Role } from './types';
 import prisma from 'db';
 
@@ -47,12 +47,25 @@ export function initializeSocket(httpServer: HttpServer) {
     setupPresenceHandlers(authSocket, io);
     setupNotificationHandlers(authSocket, io);
 
+    // Send online users count to admin
+    if (authSocket.userRole === 'ADMIN') {
+      broadcastOnlineUsersCount();
+    }
+
     authSocket.on('disconnect', () => {
       console.log(`User disconnected: ${authSocket.userId}`);
+      // Broadcast updated count to admins
+      broadcastOnlineUsersCount();
     });
   });
 
   return io;
+}
+
+function broadcastOnlineUsersCount() {
+  if (!io) return;
+  const count = getOnlineUsersCount();
+  io.to('role:admin').emit('presence:count', { count });
 }
 
 export function getIO(): Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData> {
@@ -60,38 +73,6 @@ export function getIO(): Server<ClientToServerEvents, ServerToClientEvents, Inte
     throw new Error('Socket.io not initialized');
   }
   return io;
-}
-
-export function broadcastActivityEvent(data: {
-  id: string;
-  action: string;
-  entityType: string;
-  entityId: string;
-  oldValue: string | null;
-  newValue: string | null;
-  userId: string;
-  projectId: string;
-  taskId: string | null;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    avatarUrl: string | null;
-  };
-}) {
-  if (!io) return;
-  const event = { ...data, createdAt: new Date().toISOString() };
-
-  // Broadcast to project room
-  io.to(`project:${data.projectId}`).emit('activity:new', event);
-
-  // Broadcast to admins
-  io.to('role:admin').emit('activity:new', event);
-
-  // Broadcast to PM if they manage this project
-  // This would need the project manager ID - in practice, you'd fetch it
-  // For now, we'll also broadcast to all PM rooms
-  // A more efficient approach would be to track PM rooms per project
 }
 
 export function broadcastNotificationEvent(data: {
@@ -147,8 +128,14 @@ export function broadcastPresenceUpdate(userId: string, online: boolean, userDat
   } else {
     io.to('presence').emit('presence:user-offline', event);
   }
+  // Broadcast updated count to admins
+  broadcastOnlineUsersCount();
 }
 
 export function getOnlineUsersList() {
   return getOnlineUsers();
+}
+
+export function getOnlineUsersCount() {
+  return getOnlineUsersCount();
 }

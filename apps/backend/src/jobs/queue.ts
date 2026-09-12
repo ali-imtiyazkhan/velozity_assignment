@@ -1,9 +1,16 @@
 import Queue from 'bull';
 import type { Job } from 'bull';
+import Redis from 'ioredis';
 import { config } from '../config';
 
+const createRedisClient = () => new Redis(config.redis.url, {
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+  lazyConnect: true,
+});
+
 export const overdueQueue = new Queue('overdue-tasks', {
-  redis: config.redis.url,
+  createClient: createRedisClient,
   defaultJobOptions: {
     removeOnComplete: 100,
     removeOnFail: 50,

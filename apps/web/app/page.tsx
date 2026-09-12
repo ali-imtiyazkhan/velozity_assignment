@@ -1,9 +1,17 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Suspense } from 'react';
+
+const Landing = dynamic(() => import('@/pageComponents/Landing'), {
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+    </div>
+  ),
+});
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
@@ -15,14 +23,5 @@ export default function Home() {
     }
   }, [isAuthenticated, router]);
 
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>}>
-      <LandingPage />
-    </Suspense>
-  );
-}
-
-async function LandingPage() {
-  const { default: Landing } = await import('@/pageComponents/Landing');
   return <Landing />;
 }

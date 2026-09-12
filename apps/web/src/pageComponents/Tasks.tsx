@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTasks, useUpdateTaskStatus } from '@/api/hooks';
 import { useProjects } from '@/api/hooks';
+import { useSocket } from '@/hooks/useSocket';
 import { Button, Input, Select, Card, CardContent, Badge, Dropdown, DropdownItem, Avatar } from '@/components/ui';
 import { formatDate, formatRelativeTime, formatStatus, formatPriority, getStatusColor, getPriorityColor } from '@/utils/formatters';
 import { cn } from '@/utils/cn';
@@ -22,6 +23,7 @@ export default function TasksPage() {
   });
   const { data: projectsData } = useProjects();
   const updateStatusMutation = useUpdateTaskStatus();
+  const { updateTaskStatus } = useSocket();
 
   const tasks = tasksData?.data || [];
   const projects = projectsData?.data || [];
@@ -47,18 +49,22 @@ export default function TasksPage() {
     ...projects.map((p) => ({ value: p.id, label: p.name })),
   ];
 
-  const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
+  const handleStatusChange = (taskId: string, newStatus: TaskStatus, projectId: string, oldStatus: string) => {
+    // Emit socket event for real-time updates
+    updateTaskStatus(taskId, newStatus);
+    
+    // Also call the API
     updateStatusMutation.mutate({ id: taskId, status: newStatus }, {
       onSuccess: () => refetch(),
     });
   };
 
-  const getStatusDropdownItems = (taskId: string, currentStatus: string): DropdownItem[] => {
+  const getStatusDropdownItems = (taskId: string, currentStatus: string, projectId: string): DropdownItem[] => {
     return statusOptions
       .filter((opt) => opt.value && opt.value !== currentStatus)
       .map((opt) => ({
         label: opt.label,
-        onClick: () => handleStatusChange(taskId, opt.value as TaskStatus),
+        onClick: () => handleStatusChange(taskId, opt.value as TaskStatus, projectId, currentStatus),
       }));
   };
 
@@ -175,7 +181,7 @@ export default function TasksPage() {
                               {formatStatus(task.status)}
                             </Badge>
                           }
-                          items={getStatusDropdownItems(task.id, task.status)}
+                          items={getStatusDropdownItems(task.id, task.status, task.projectId)}
                           align="left"
                         />
                       </td>

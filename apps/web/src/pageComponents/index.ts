@@ -7,3 +7,4 @@ export { default as SettingsPage } from './Settings';
 export { default as ClientsPage } from './Clients';
 export { default as ActivityPage } from './Activity';
 export { default as LandingPage } from './Landing';
+export { default as UsersPage } from './Users';

@@ -172,6 +172,20 @@ export interface UpdateClientInput {
   company?: string;
 }
 
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+}
+
+export interface UpdateUserInput {
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: Role;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   meta: {
