@@ -24,14 +24,37 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
-  const { data: adminData, isLoading: adminLoading } = useAdminDashboard();
-  const { data: pmData, isLoading: pmLoading } = usePMDashboard();
-  const { data: devData, isLoading: devLoading } = useDeveloperDashboard();
 
-  const isLoading = adminLoading || pmLoading || devLoading;
+  const isAdmin = user?.role === 'ADMIN';
+  const isPM = user?.role === 'PROJECT_MANAGER';
+  const isDeveloper = user?.role === 'DEVELOPER';
+
+  const { data: adminData, isLoading: adminLoading, isError: adminError } = useAdminDashboard(isAdmin);
+  const { data: pmData, isLoading: pmLoading, isError: pmError } = usePMDashboard(isPM);
+  const { data: devData, isLoading: devLoading, isError: devError } = useDeveloperDashboard(isDeveloper);
+
+  // Only wait for the relevant dashboard based on user role
+  const isLoading = 
+    (user?.role === 'ADMIN' && adminLoading) ||
+    (user?.role === 'PROJECT_MANAGER' && pmLoading) ||
+    (user?.role === 'DEVELOPER' && devLoading);
+
+  const hasError = 
+    (user?.role === 'ADMIN' && adminError) ||
+    (user?.role === 'PROJECT_MANAGER' && pmError) ||
+    (user?.role === 'DEVELOPER' && devError);
 
   if (isLoading) {
     return <DashboardSkeleton />;
+  }
+
+  if (hasError) {
+    return (
+      <div className="text-center py-12">
+        <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">Failed to load dashboard</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">Please try refreshing the page</p>
+      </div>
+    );
   }
 
   if (user?.role === 'ADMIN' && adminData) {
