@@ -1,7 +1,6 @@
 'use client';
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { User } from '@/types';
 
 interface AuthState {
@@ -14,32 +13,20 @@ interface AuthState {
   setAuthenticated: (isAuthenticated: boolean, user?: User) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      accessToken: null,
-      isAuthenticated: false,
-      
-      login: (accessToken, user) => 
-        set({ accessToken, user, isAuthenticated: true }),
-      
-      logout: () => 
-        set({ accessToken: null, user: null, isAuthenticated: false }),
-      
-      setUser: (user) => 
-        set({ user }),
-      
-      setAuthenticated: (isAuthenticated, user) => 
-        set({ isAuthenticated, user: user ?? null }),
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
+  
+  login: (accessToken, user) => 
+    set({ accessToken, user, isAuthenticated: true }),
+  
+  logout: () => 
+    set({ accessToken: null, user: null, isAuthenticated: false }),
+  
+  setUser: (user) => 
+    set({ user }),
+  
+  setAuthenticated: (isAuthenticated, user) => 
+    set({ isAuthenticated, user: user ?? null }),
+}));

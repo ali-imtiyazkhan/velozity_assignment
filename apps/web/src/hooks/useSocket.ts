@@ -13,6 +13,7 @@ export function useSocket(): {
   fetchActivity: (projectId?: string, limit?: number) => void;
   markNotificationRead: (notificationId: string) => void;
   markAllNotificationsRead: () => void;
+  updateTaskStatus: (taskId: string, newStatus: string) => void;
 } {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -71,6 +72,10 @@ export function useSocket(): {
     socketRef.current?.emit('notification:mark-all-read');
   }, []);
 
+  const updateTaskStatus = useCallback((taskId: string, newStatus: string) => {
+    socketRef.current?.emit('task:status-update', { taskId, newStatus });
+  }, []);
+
   return {
     socket: socketRef.current,
     isConnected,
@@ -79,6 +84,7 @@ export function useSocket(): {
     fetchActivity,
     markNotificationRead,
     markAllNotificationsRead,
+    updateTaskStatus,
   };
 }
 

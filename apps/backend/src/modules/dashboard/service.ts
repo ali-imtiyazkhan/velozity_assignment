@@ -2,6 +2,7 @@ import prisma from 'db';
 import { NotFoundError, ForbiddenError } from '../../shared/errors/AppError';
 import type { Role } from 'db';
 import type { DashboardQuery } from './schemas';
+import { getOnlineUsersCount } from '../../sockets/handlers/presence';
 
 export interface AdminDashboardStats {
   totalUsers: number;
@@ -144,7 +145,7 @@ export async function getAdminDashboard(query: DashboardQuery): Promise<AdminDas
     tasksByPriority: tasksByPriority.reduce((acc, t) => ({ ...acc, [t.priority]: t._count }), {}),
     usersByRole: usersByRole.reduce((acc, u) => ({ ...acc, [u.role]: u._count }), {}),
     recentActivity,
-    onlineUsers: 0, // Will be populated by socket service
+    onlineUsers: getOnlineUsersCount(),
   };
 }
 

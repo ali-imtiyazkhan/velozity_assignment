@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '@/api/client';
 import { ENDPOINTS } from '@/api/endpoints';
-import type { PaginatedResponse } from '@/types';
 
 export const dashboardKeys = {
   all: ['dashboard'] as const,
@@ -12,47 +11,82 @@ export const dashboardKeys = {
   developer: () => [...dashboardKeys.all, 'developer'] as const,
 };
 
-export interface AdminDashboardData {
-  stats: {
-    totalUsers: number;
-    totalProjects: number;
-    totalTasks: number;
-    overdueTasks: number;
-    onlineUsers: number;
-  };
-  recentActivity: any[];
-  overdueTasksList: any[];
+export interface AdminDashboardStats {
+  totalUsers: number;
+  totalProjects: number;
+  totalTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  usersByRole: Record<string, number>;
+  recentActivity: Array<{
+    id: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    userId: string;
+    projectId: string;
+    createdAt: string;
+    user: { id: string; name: string; email: string; avatarUrl: string | null };
+  }>;
+  onlineUsers: number;
 }
 
-export interface PMDashboardData {
-  stats: {
-    myProjects: number;
-    totalTasks: number;
-    tasksInReview: number;
-    overdueTasks: number;
-  };
-  projects: any[];
-  priorityBreakdown: Record<string, number>;
-  upcomingDueDates: any[];
+export interface PMDashboardStats {
+  myProjects: number;
+  totalTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  upcomingDeadlines: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    priority: string;
+    project: { id: string; name: string };
+  }>;
+  recentActivity: Array<{
+    id: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    userId: string;
+    projectId: string;
+    createdAt: string;
+    user: { id: string; name: string; email: string; avatarUrl: string | null };
+  }>;
 }
 
-export interface DeveloperDashboardData {
-  stats: {
-    assignedTasks: number;
-    inProgress: number;
-    inReview: number;
-    done: number;
-    overdue: number;
-  };
-  assignedTasks: any[];
-  upcomingDueDates: any[];
+export interface DeveloperDashboardStats {
+  assignedTasks: number;
+  overdueTasks: number;
+  tasksByStatus: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  upcomingTasks: Array<{
+    id: string;
+    title: string;
+    dueDate: string;
+    priority: string;
+    status: string;
+    project: { id: string; name: string };
+  }>;
+  recentActivity: Array<{
+    id: string;
+    action: string;
+    entityType: string;
+    entityId: string;
+    userId: string;
+    projectId: string;
+    createdAt: string;
+    user: { id: string; name: string; email: string; avatarUrl: string | null };
+  }>;
 }
 
 export function useAdminDashboard() {
   return useQuery({
     queryKey: dashboardKeys.admin(),
     queryFn: async () => {
-      const response = await api.get<AdminDashboardData>(ENDPOINTS.dashboard.admin);
+      const response = await api.get<AdminDashboardStats>(ENDPOINTS.dashboard.admin);
       return response.data;
     },
   });
@@ -62,7 +96,7 @@ export function usePMDashboard() {
   return useQuery({
     queryKey: dashboardKeys.pm(),
     queryFn: async () => {
-      const response = await api.get<PMDashboardData>(ENDPOINTS.dashboard.pm);
+      const response = await api.get<PMDashboardStats>(ENDPOINTS.dashboard.pm);
       return response.data;
     },
   });
@@ -72,7 +106,7 @@ export function useDeveloperDashboard() {
   return useQuery({
     queryKey: dashboardKeys.developer(),
     queryFn: async () => {
-      const response = await api.get<DeveloperDashboardData>(ENDPOINTS.dashboard.developer);
+      const response = await api.get<DeveloperDashboardStats>(ENDPOINTS.dashboard.developer);
       return response.data;
     },
   });

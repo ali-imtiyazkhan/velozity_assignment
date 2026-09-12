@@ -91,6 +91,10 @@ export function getOnlineUsers(): PresenceEvent[] {
   }));
 }
 
+export function getOnlineUsersCount(): number {
+  return onlineUsers.size;
+}
+
 export function isUserOnline(userId: string): boolean {
   return onlineUsers.has(userId);
 }

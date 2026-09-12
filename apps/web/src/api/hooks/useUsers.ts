@@ -59,6 +59,20 @@ export function useUpdateUser() {
   });
 }
 
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { name: string; email: string; password: string; role: string }) => {
+      const response = await api.post(ENDPOINTS.users.create, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() });
+    },
+  });
+}
+
 export function useDeleteUser() {
   const queryClient = useQueryClient();
 
