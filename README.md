@@ -302,6 +302,8 @@ bun run build --filter=backend
 2. Set `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SOCKET_URL`
 3. Deploy
 
+**Live Demo**: https://velozity-dashboard.vercel.app
+
 ### Docker Production
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
