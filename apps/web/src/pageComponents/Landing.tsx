@@ -1,8 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { ChevronRight } from 'lucide-react';
+import { Navbar } from '@/components/layout/Navbar';
+import DashboardPreview from '@/components/dashboard/DashboardPreview';
+
+const VIDEO_SRC = '/assets/demo.mp4';
+const POSTER_SRC = '/assets/poster.jpg';
+
+const legacyPlaysInlineAttrs = {
+  'webkit-playsinline': 'true',
+  'x5-playsinline': 'true',
+};
+
+const stats = [
+  { value: '99.9%', label: 'Uptime SLA' },
+  { value: '< 50ms', label: 'API Latency' },
+  { value: '10K+', label: 'Concurrent Users' },
+  { value: 'SOC 2', label: 'Compliance' },
+];
 
 const features = [
   {
@@ -61,79 +77,144 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: '99.9%', label: 'Uptime SLA' },
-  { value: '< 50ms', label: 'API Latency' },
-  { value: '10K+', label: 'Concurrent Users' },
-  { value: 'SOC 2', label: 'Compliance' },
+const roles = [
+  {
+    role: 'Administrator',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+    features: [
+      'Full system access & user management',
+      'Global activity feed & analytics',
+      'System-wide configuration',
+      'Audit logs & compliance reports',
+    ],
+  },
+  {
+    role: 'Project Manager',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+    ),
+    features: [
+      'Create & manage projects',
+      'Assign tasks to developers',
+      'Review & approve work',
+      'Project dashboards & deadlines',
+    ],
+  },
+  {
+    role: 'Developer',
+    icon: (
+      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+      </svg>
+    ),
+    features: [
+      'Personal task queue & Kanban',
+      'Real-time status updates',
+      'Code review workflow',
+      'Personal dashboard & notifications',
+    ],
+  },
 ];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white">
-                Velozity
-              </Link>
-              <div className="hidden md:flex items-center gap-6">
-                <Link href="#features" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Features</Link>
-                <Link href="#pricing" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Pricing</Link>
-                <Link href="#about" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">About</Link>
-                <Link href="/login" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Sign in</Link>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Sign in</Button>
-              </Link>
-              <Link href="/auth/register">
-                <Button size="sm">Get Started</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <main className="min-h-screen w-full bg-[#ededed] dark:bg-gray-950 p-3 sm:p-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <section className="relative h-[calc(100vh-24px)] w-full overflow-hidden rounded-2xl bg-[#d9d9d9] dark:bg-gray-900 sm:h-[calc(100vh-32px)] sm:rounded-3xl">
+        <video
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50 dark:opacity-30"
+          src={VIDEO_SRC}
+          poster={POSTER_SRC}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disableRemotePlayback
+          {...legacyPlaysInlineAttrs}
+        />
+        <div className="absolute inset-0 bg-white/10 dark:bg-black/20" aria-hidden="true" />
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
-              </span>
-              Now with real-time collaboration & Bull job queues
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+        <div className="relative z-10">
+          <Navbar />
+
+          <div className="flex flex-col items-center px-4 pb-8 pt-10 text-center sm:pb-12 sm:pt-16">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/80 dark:bg-gray-800/80 px-4 py-1.5 text-[13px] shadow-sm backdrop-blur-sm">
+              <span
+                className="h-2 w-2 rounded-full bg-[#ef4d23]"
+                aria-hidden="true"
+              />
+              Velozity
+            </span>
+
+            <h1
+              className="mt-5 max-w-4xl text-gray-900 dark:text-white sm:mt-6"
+              style={{
+                fontSize: 'clamp(36px, 8vw, 72px)',
+                lineHeight: 1.05,
+                fontWeight: 500,
+                letterSpacing: '-0.02em',
+              }}
+            >
               Project Management
               <br />
-              <span className="text-primary-600 dark:text-primary-400">Built for Teams</span>
+              <span
+                style={{
+                  fontFamily: "'Instrument Serif', serif",
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                }}
+              >
+                Built for Teams
+              </span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
-              Plan, track, and deliver projects with confidence. Velozity combines real-time collaboration, 
-              role-based access control, and intelligent automation in one powerful platform.
+
+            <p
+              className="mt-4 px-2 text-gray-700 dark:text-gray-300 sm:mt-6"
+              style={{ fontSize: 'clamp(13px, 3.5vw, 16px)' }}
+            >
+              Plan, track, and deliver projects with confidence. Velozity combines real-time collaboration, role-based access control, and intelligent automation in one powerful platform.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/auth/register">
-                <Button size="lg" className="w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto inline-flex items-center gap-3 rounded-full bg-[#0b0f1a] dark:bg-white py-2 pl-6 pr-2 text-[14px] font-medium text-white dark:text-[#0b0f1a] sm:py-2.5 sm:pl-7 transition-opacity hover:opacity-90"
+                >
                   Start Free Trial
-                </Button>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 dark:bg-gray-900/15 sm:h-7 sm:w-7">
+                    <ChevronRight className="h-4 w-4" strokeWidth={2} />
+                  </span>
+                </button>
               </Link>
               <Link href="#features">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto inline-flex items-center gap-3 rounded-full border border-gray-300 dark:border-gray-600 bg-transparent py-2 pl-6 pr-2 text-[14px] font-medium text-gray-900 dark:text-white sm:py-2.5 sm:pl-7 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
                   View Demo
-                </Button>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 sm:h-7 sm:w-7">
+                    <ChevronRight className="h-4 w-4" strokeWidth={2} />
+                  </span>
+                </button>
               </Link>
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <DashboardPreview />
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
                 <div className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
@@ -141,12 +222,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-100 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-100 dark:bg-purple-900/20 rounded-full blur-3xl opacity-50 animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
       </section>
 
@@ -164,19 +239,17 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature) => (
-              <Card key={feature.title} className="h-full hover:shadow-xl transition-shadow duration-300">
-                <div className="p-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    {feature.description}
-                  </p>
+              <div key={feature.title} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 hover:shadow-xl transition-shadow duration-300 h-full">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+                  {feature.icon}
                 </div>
-              </Card>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  {feature.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
@@ -196,14 +269,20 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/auth/register">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-primary-700 font-medium text-lg hover:bg-primary-50 transition-colors"
+                  >
                     Start Free Trial
-                  </Button>
+                  </button>
                 </Link>
                 <Link href="#features">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/10">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-white text-white font-medium text-lg hover:bg-white/10 transition-colors"
+                  >
                     See How It Works
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>
@@ -224,74 +303,29 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                role: 'Administrator',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                ),
-                features: [
-                  'Full system access & user management',
-                  'Global activity feed & analytics',
-                  'System-wide configuration',
-                  'Audit logs & compliance reports',
-                ],
-              },
-              {
-                role: 'Project Manager',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                ),
-                features: [
-                  'Create & manage projects',
-                  'Assign tasks to developers',
-                  'Review & approve work',
-                  'Project dashboards & deadlines',
-                ],
-              },
-              {
-                role: 'Developer',
-                icon: (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                ),
-                features: [
-                  'Personal task queue & Kanban',
-                  'Real-time status updates',
-                  'Code review workflow',
-                  'Personal dashboard & notifications',
-                ],
-              },
-            ].map((role) => (
-              <Card key={role.role} className="h-full">
-                <div className="p-6">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
-                    {role.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                    {role.role}
-                  </h3>
-                  <ul className="space-y-3">
-                    {role.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
-                        <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+            {roles.map((role) => (
+              <div key={role.role} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 h-full">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+                  {role.icon}
                 </div>
-              </Card>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  {role.role}
+                </h3>
+                <ul className="space-y-3">
+                  {role.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
