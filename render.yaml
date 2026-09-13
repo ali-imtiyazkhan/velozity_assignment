@@ -10,9 +10,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3001
+        value: "3001"
       - key: FRONTEND_URL
-        value: https://velozity-frontend.vercel.app
+        value: https://velozity-assignment.vercel.app
       - key: DATABASE_URL
         fromDatabase:
           name: velozity-db
@@ -33,8 +33,12 @@ services:
     name: velozity-redis
     plan: free
     region: oregon
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
 databases:
   - name: velozity-db
     plan: free
     region: oregon
+    databaseName: velozity
+    user: velozity
