@@ -135,7 +135,3 @@ export function broadcastPresenceUpdate(userId: string, online: boolean, userDat
 export function getOnlineUsersList() {
   return getOnlineUsers();
 }
-
-export function getOnlineUsersCount() {
-  return getOnlineUsersCount();
-}

@@ -20,6 +20,7 @@ export interface ServerToClientEvents {
   'presence:user-online': (data: PresenceEvent) => void;
   'presence:user-offline': (data: PresenceEvent) => void;
   'presence:online-users': (data: PresenceEvent[]) => void;
+  'presence:count': (data: { count: number }) => void;
   'task:status-changed': (data: TaskStatusEvent) => void;
   'project:updated': (data: ProjectEvent) => void;
   'project:joined': (data: { projectId: string }) => void;

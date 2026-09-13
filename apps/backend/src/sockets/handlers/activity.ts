@@ -139,7 +139,7 @@ export function setupActivityHandlers(socket: AuthenticatedSocket, io: SocketIOS
       // Update task
       const updatedTask = await prisma.task.update({
         where: { id: taskId },
-        data: { status: newStatus, isOverdue },
+        data: { status: newStatus as 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE', isOverdue },
         include: {
           project: { select: { id: true, name: true, clientId: true, managerId: true } },
           assignee: { select: { id: true, name: true, email: true, avatarUrl: true } },
