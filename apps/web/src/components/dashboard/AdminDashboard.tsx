@@ -36,7 +36,7 @@ function StatCard({ title, value, icon, color, trend }: StatCardProps) {
 }
 
 export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
-  const [onlineUsers, setOnlineUsers] = useState(data.onlineUsers);
+  const [onlineUsers, setOnlineUsers] = useState(data?.onlineUsers ?? 0);
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -49,10 +49,10 @@ export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
   }, [socket]);
 
   const stats = [
-    { title: 'Total Users', value: data.totalUsers, icon: '👥', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
-    { title: 'Total Projects', value: data.totalProjects, icon: '📁', color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
-    { title: 'Total Tasks', value: data.totalTasks, icon: '📋', color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
-    { title: 'Overdue Tasks', value: data.overdueTasks, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
+    { title: 'Total Users', value: data?.totalUsers ?? 0, icon: '👥', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
+    { title: 'Total Projects', value: data?.totalProjects ?? 0, icon: '📁', color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
+    { title: 'Total Tasks', value: data?.totalTasks ?? 0, icon: '📋', color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
+    { title: 'Overdue Tasks', value: data?.overdueTasks ?? 0, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
     { title: 'Online Users', value: onlineUsers, icon: '🟢', color: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
   ];
 
@@ -74,7 +74,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Status</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByStatus).map(([status, count]) => (
+            {Object.entries(data?.tasksByStatus || {}).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400 capitalize">{status.replace('_', ' ')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -88,7 +88,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Priority</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByPriority).map(([priority, count]) => (
+            {Object.entries(data?.tasksByPriority || {}).map(([priority, count]) => (
               <div key={priority} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">{priority}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -104,7 +104,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Users by Role</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.usersByRole).map(([role, count]) => (
+            {Object.entries(data?.usersByRole || {}).map(([role, count]) => (
               <div key={role} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">{role.replace('_', ' ')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -128,9 +128,9 @@ export function AdminDashboard({ data }: { data: AdminDashboardStats }) {
 
 export function PMDashboard({ data }: { data: PMDashboardStats }) {
   const stats = [
-    { title: 'My Projects', value: data.myProjects, icon: '📁', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
-    { title: 'Total Tasks', value: data.totalTasks, icon: '📋', color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
-    { title: 'Overdue Tasks', value: data.overdueTasks, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
+    { title: 'My Projects', value: data?.myProjects ?? 0, icon: '📁', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
+    { title: 'Total Tasks', value: data?.totalTasks ?? 0, icon: '📋', color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
+    { title: 'Overdue Tasks', value: data?.overdueTasks ?? 0, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
   ];
 
   return (
@@ -151,7 +151,7 @@ export function PMDashboard({ data }: { data: PMDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Status</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByStatus).map(([status, count]) => (
+            {Object.entries(data?.tasksByStatus || {}).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400 capitalize">{status.replace('_', ' ')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -165,7 +165,7 @@ export function PMDashboard({ data }: { data: PMDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Priority</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByPriority).map(([priority, count]) => (
+            {Object.entries(data?.tasksByPriority || {}).map(([priority, count]) => (
               <div key={priority} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">{priority}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -181,14 +181,14 @@ export function PMDashboard({ data }: { data: PMDashboardStats }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Upcoming Deadlines</h2>
           </div>
           <div className="p-4 space-y-3">
-            {data.upcomingDeadlines.length === 0 ? (
+            {(data?.upcomingDeadlines || []).length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 text-center py-4">No upcoming deadlines</p>
             ) : (
-              data.upcomingDeadlines.map(task => (
+              (data?.upcomingDeadlines || []).map(task => (
                 <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">{task.title}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{task.project.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{task.project?.name || 'Project'}</p>
                   </div>
                   <div className="text-right">
                     <Badge variant="warning">{new Date(task.dueDate).toLocaleDateString()}</Badge>
@@ -215,8 +215,8 @@ export function PMDashboard({ data }: { data: PMDashboardStats }) {
 
 export function DeveloperDashboard({ data }: { data: DeveloperDashboardStats }) {
   const stats = [
-    { title: 'Assigned Tasks', value: data.assignedTasks, icon: '📋', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
-    { title: 'Overdue Tasks', value: data.overdueTasks, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
+    { title: 'Assigned Tasks', value: data?.assignedTasks ?? 0, icon: '📋', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
+    { title: 'Overdue Tasks', value: data?.overdueTasks ?? 0, icon: '⚠️', color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' },
   ];
 
   return (
@@ -237,7 +237,7 @@ export function DeveloperDashboard({ data }: { data: DeveloperDashboardStats }) 
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Status</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByStatus).map(([status, count]) => (
+            {Object.entries(data?.tasksByStatus || {}).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400 capitalize">{status.replace('_', ' ')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -251,7 +251,7 @@ export function DeveloperDashboard({ data }: { data: DeveloperDashboardStats }) 
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Tasks by Priority</h2>
           </div>
           <div className="p-4 space-y-3">
-            {Object.entries(data.tasksByPriority).map(([priority, count]) => (
+            {Object.entries(data?.tasksByPriority || {}).map(([priority, count]) => (
               <div key={priority} className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">{priority}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{count}</span>
@@ -267,14 +267,14 @@ export function DeveloperDashboard({ data }: { data: DeveloperDashboardStats }) 
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Upcoming Tasks</h2>
           </div>
           <div className="p-4 space-y-3">
-            {data.upcomingTasks.length === 0 ? (
+            {(data?.upcomingTasks || []).length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 text-center py-4">No upcoming tasks</p>
             ) : (
-              data.upcomingTasks.map(task => (
+              (data?.upcomingTasks || []).map(task => (
                 <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">{task.title}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{task.project.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{task.project?.name || 'Project'}</p>
                   </div>
                   <div className="text-right">
                     <Badge variant="warning">{new Date(task.dueDate).toLocaleDateString()}</Badge>

@@ -38,12 +38,13 @@ export function LoginForm() {
     loginMutation(
       { email, password },
       {
-        onSuccess: (data) => {
-          setAccessToken(data.accessToken);
-          login(data.accessToken, data.user);
+        onSuccess: (data: any) => {
+          const token = data?.data?.accessToken || data?.accessToken;
+          const user = data?.data?.user || data?.user;
+          if (token) setAccessToken(token);
+          if (user && token) login(token, user);
           toast.success('Welcome back!');
           router.push(callbackUrl);
-          router.refresh();
         },
         onError: (error: any) => {
           const message = error.response?.data?.message || 'Login failed. Please try again.';

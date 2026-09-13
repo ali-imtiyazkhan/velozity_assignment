@@ -58,15 +58,15 @@ export default function DashboardPage() {
   }
 
   if (user?.role === 'ADMIN' && adminData) {
-    return <AdminDashboard data={adminData} />;
+    return <AdminDashboard data={(adminData as any)?.data || adminData} />;
   }
 
   if (user?.role === 'PROJECT_MANAGER' && pmData) {
-    return <PMDashboard data={pmData} />;
+    return <PMDashboard data={(pmData as any)?.data || pmData} />;
   }
 
   if (user?.role === 'DEVELOPER' && devData) {
-    return <DeveloperDashboard data={devData} />;
+    return <DeveloperDashboard data={(devData as any)?.data || devData} />;
   }
 
   return (

@@ -14,8 +14,8 @@ export function useMe() {
   return useQuery({
     queryKey: authKeys.me(),
     queryFn: async () => {
-      const response = await api.get<AuthResponse>(ENDPOINTS.auth.me);
-      return response.data;
+      const response = await api.get<any>(ENDPOINTS.auth.me);
+      return response.data?.data || response.data;
     },
     retry: false,
   });
@@ -26,8 +26,8 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (input: LoginInput) => {
-      const response = await api.post<AuthResponse>(ENDPOINTS.auth.login, input);
-      return response.data;
+      const response = await api.post<any>(ENDPOINTS.auth.login, input);
+      return response.data?.data || response.data;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(authKeys.me(), data);
@@ -36,10 +36,15 @@ export function useLogin() {
 }
 
 export function useRegister() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (input: RegisterInput) => {
-      const response = await api.post<AuthResponse>(ENDPOINTS.auth.register, input);
-      return response.data;
+      const response = await api.post<any>(ENDPOINTS.auth.register, input);
+      return response.data?.data || response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(authKeys.me(), data);
     },
   });
 }
@@ -62,12 +67,12 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: async (data: Partial<User>) => {
-      const response = await api.patch<User>(ENDPOINTS.users.update('me'), data);
-      return response.data;
+      const response = await api.patch<any>(ENDPOINTS.users.update('me'), data);
+      return response.data?.data || response.data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(authKeys.me(), (old: AuthResponse | undefined) =>
-        old ? { ...old, user: data } : undefined
+      queryClient.setQueryData(authKeys.me(), (old: any) =>
+        old ? { ...old, user: data } : { user: data }
       );
     },
   });

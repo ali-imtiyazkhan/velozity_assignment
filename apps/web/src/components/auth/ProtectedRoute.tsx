@@ -23,8 +23,9 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!isLoading && !isError && meData) {
-      setAuthenticated(true, meData.user);
-    } else if (!isLoading && (isError || !meData)) {
+      const currentUser = (meData as any)?.user || (meData as any)?.data?.user || meData;
+      setAuthenticated(true, currentUser);
+    } else if (!isLoading && isError) {
       setAuthenticated(false);
     }
   }, [isLoading, isError, meData, setAuthenticated]);
@@ -39,7 +40,7 @@ export function ProtectedRoute({
     }
   }, [isLoading, isAuthenticated, user, allowedRoles, router, pathname, fallbackPath]);
 
-  if (isLoading) {
+  if (isLoading && !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />

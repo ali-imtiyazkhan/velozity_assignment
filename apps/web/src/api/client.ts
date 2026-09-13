@@ -14,13 +14,26 @@ let accessToken: string | null = null;
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
+  if (typeof window !== 'undefined') {
+    if (token) {
+      localStorage.setItem('accessToken', token);
+    } else {
+      localStorage.removeItem('accessToken');
+    }
+  }
 };
 
-export const getAccessToken = () => accessToken;
+export const getAccessToken = () => {
+  if (!accessToken && typeof window !== 'undefined') {
+    accessToken = localStorage.getItem('accessToken');
+  }
+  return accessToken;
+};
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (accessToken && config.headers) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  const token = getAccessToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -65,13 +78,19 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.post<AuthResponse>(
+        const response = await axios.post<any>(
           `${api.defaults.baseURL}${ENDPOINTS.auth.refresh}`,
           {},
           { withCredentials: true }
         );
 
-        const { accessToken: newAccessToken } = response.data;
+        const newAccessToken =
+          response.data?.data?.accessToken || response.data?.accessToken;
+
+        if (!newAccessToken) {
+          throw new Error('No access token returned from refresh');
+        }
+
         setAccessToken(newAccessToken);
         processQueue(null, newAccessToken);
 
@@ -83,7 +102,10 @@ api.interceptors.response.use(
         processQueue(refreshError as AxiosError, null);
         setAccessToken(null);
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          const pathname = window.location.pathname;
+          if (!pathname.startsWith('/login') && !pathname.startsWith('/auth')) {
+            window.location.href = '/login';
+          }
         }
         return Promise.reject(refreshError);
       } finally {

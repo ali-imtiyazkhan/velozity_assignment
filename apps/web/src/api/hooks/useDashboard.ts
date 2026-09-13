@@ -86,13 +86,13 @@ export function useAdminDashboard(enabled: boolean = true) {
   return useQuery({
     queryKey: dashboardKeys.admin(),
     queryFn: async () => {
-      const response = await api.get<AdminDashboardStats>(ENDPOINTS.dashboard.admin);
-      return response.data;
+      const response = await api.get<any>(ENDPOINTS.dashboard.admin);
+      return response.data?.data || response.data;
     },
     enabled,
     retry: (failureCount, error: any) => {
-      if (error.response?.status === 403) return false;
-      return failureCount < 3;
+      if (error.response?.status === 403 || error.response?.status === 401) return false;
+      return failureCount < 2;
     },
   });
 }
@@ -101,13 +101,13 @@ export function usePMDashboard(enabled: boolean = true) {
   return useQuery({
     queryKey: dashboardKeys.pm(),
     queryFn: async () => {
-      const response = await api.get<PMDashboardStats>(ENDPOINTS.dashboard.pm);
-      return response.data;
+      const response = await api.get<any>(ENDPOINTS.dashboard.pm);
+      return response.data?.data || response.data;
     },
     enabled,
     retry: (failureCount, error: any) => {
-      if (error.response?.status === 403) return false;
-      return failureCount < 3;
+      if (error.response?.status === 403 || error.response?.status === 401) return false;
+      return failureCount < 2;
     },
   });
 }
@@ -116,13 +116,13 @@ export function useDeveloperDashboard(enabled: boolean = true) {
   return useQuery({
     queryKey: dashboardKeys.developer(),
     queryFn: async () => {
-      const response = await api.get<DeveloperDashboardStats>(ENDPOINTS.dashboard.developer);
-      return response.data;
+      const response = await api.get<any>(ENDPOINTS.dashboard.developer);
+      return response.data?.data || response.data;
     },
     enabled,
     retry: (failureCount, error: any) => {
-      if (error.response?.status === 403) return false;
-      return failureCount < 3;
+      if (error.response?.status === 403 || error.response?.status === 401) return false;
+      return failureCount < 2;
     },
   });
 }

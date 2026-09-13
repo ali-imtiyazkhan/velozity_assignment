@@ -1,7 +1,9 @@
 'use client';
 
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '@/types';
+import { setAccessToken } from '@/api/client';
 
 interface AuthState {
   user: User | null;
@@ -13,20 +15,39 @@ interface AuthState {
   setAuthenticated: (isAuthenticated: boolean, user?: User) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  
-  login: (accessToken, user) => 
-    set({ accessToken, user, isAuthenticated: true }),
-  
-  logout: () => 
-    set({ accessToken: null, user: null, isAuthenticated: false }),
-  
-  setUser: (user) => 
-    set({ user }),
-  
-  setAuthenticated: (isAuthenticated, user) => 
-    set({ isAuthenticated, user: user ?? null }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+
+      login: (accessToken, user) => {
+        setAccessToken(accessToken);
+        set({ accessToken, user, isAuthenticated: true });
+      },
+
+      logout: () => {
+        setAccessToken(null);
+        set({ accessToken: null, user: null, isAuthenticated: false });
+      },
+
+      setUser: (user) => set({ user }),
+
+      setAuthenticated: (isAuthenticated, user) =>
+        set((state) => ({
+          isAuthenticated,
+          user: user !== undefined ? user : state.user,
+        })),
+    }),
+    {
+      name: 'velozity-auth-store',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state?.accessToken) {
+          setAccessToken(state.accessToken);
+        }
+      },
+    }
+  )
+);

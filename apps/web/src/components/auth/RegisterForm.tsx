@@ -58,12 +58,13 @@ export function RegisterForm() {
     registerMutation(
       { name: formData.name, email: formData.email, password: formData.password, role: formData.role },
       {
-        onSuccess: (data) => {
-          setAccessToken(data.accessToken);
-          login(data.accessToken, data.user);
+        onSuccess: (data: any) => {
+          const token = data?.data?.accessToken || data?.accessToken;
+          const user = data?.data?.user || data?.user;
+          if (token) setAccessToken(token);
+          if (user && token) login(token, user);
           toast.success('Account created successfully!');
           router.push(callbackUrl);
-          router.refresh();
         },
         onError: (error: any) => {
           const message = error.response?.data?.message || 'Registration failed. Please try again.';

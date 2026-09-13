@@ -22,8 +22,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoading && !isError && meData) {
-      setAuthenticated(true, meData.user);
-    } else if (!isLoading && (isError || !meData)) {
+      const currentUser = (meData as any)?.user || (meData as any)?.data?.user || meData;
+      setAuthenticated(true, currentUser);
+    } else if (!isLoading && isError) {
       setAuthenticated(false);
     }
   }, [isLoading, isError, meData, setAuthenticated]);

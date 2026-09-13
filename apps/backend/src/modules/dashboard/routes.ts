@@ -9,5 +9,8 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get('/', validate(dashboardQuerySchema), getDashboardController);
+router.get('/admin', validate(dashboardQuerySchema), getDashboardController);
+router.get('/pm', validate(dashboardQuerySchema), getDashboardController);
+router.get('/developer', validate(dashboardQuerySchema), getDashboardController);
 
 export { router as dashboardRouter };
