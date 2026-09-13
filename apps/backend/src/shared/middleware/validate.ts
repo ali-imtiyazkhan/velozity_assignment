@@ -17,7 +17,8 @@ export function validate(schema: ZodSchema) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        throw new BadRequestError('Validation failed', 'VALIDATION_ERROR');
+        const details = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ');
+        throw new BadRequestError(`Validation failed: ${details}`, 'VALIDATION_ERROR');
       }
       next(error);
     }
