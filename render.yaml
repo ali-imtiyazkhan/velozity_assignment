@@ -18,23 +18,13 @@ services:
           name: velozity-db
           property: connectionString
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: velozity-redis
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
     healthCheckPath: /health
     autoDeploy: true
-
-  - type: redis
-    name: velozity-redis
-    plan: free
-    region: oregon
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
 
 databases:
   - name: velozity-db
