@@ -3,11 +3,21 @@ import type { Job } from 'bull';
 import Redis from 'ioredis';
 import { config } from '../config';
 
-const createRedisClient = () => new Redis(config.redis.url, {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-  lazyConnect: true,
-});
+function parseRedisUrl(url: string) {
+  const parsed = new URL(url);
+  return {
+    host: parsed.hostname,
+    port: parseInt(parsed.port || '6379', 10),
+    password: parsed.password || undefined,
+    username: parsed.username || undefined,
+    tls: parsed.protocol === 'rediss:' ? {} : undefined,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    lazyConnect: true,
+  };
+}
+
+const createRedisClient = () => new Redis(parseRedisUrl(config.redis.url));
 
 export const overdueQueue = new Queue('overdue-tasks', {
   createClient: createRedisClient,
