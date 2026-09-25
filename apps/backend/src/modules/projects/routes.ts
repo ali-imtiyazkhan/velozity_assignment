@@ -6,6 +6,8 @@ import {
   deleteProjectController,
   listProjectsController,
   getProjectStatsController,
+  listProjectTasksController,
+  listProjectActivityController,
 } from './controller';
 import { authMiddleware, requirePM, requireAdmin } from '../auth/middleware';
 import {
@@ -15,6 +17,8 @@ import {
   listProjectsSchema,
   projectParamsSchema,
 } from './schemas';
+import { listTasksSchema } from '../tasks/schemas';
+import { listActivitySchema } from '../activity/schemas';
 import { validate } from '../../shared/middleware/validate';
 
 const router = Router();
@@ -25,6 +29,8 @@ router.post('/', requirePM, validate(createProjectSchema), createProjectControll
 router.get('/', validate(listProjectsSchema), listProjectsController);
 router.get('/:id', validate(getProjectSchema), getProjectController);
 router.get('/:projectId/stats', validate(projectParamsSchema), getProjectStatsController);
+router.get('/:projectId/tasks', validate(listTasksSchema), listProjectTasksController);
+router.get('/:projectId/activity', validate(listActivitySchema), listProjectActivityController);
 router.patch('/:id', validate(updateProjectSchema), updateProjectController);
 router.delete('/:id', validate(getProjectSchema), deleteProjectController);
 

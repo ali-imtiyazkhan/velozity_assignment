@@ -6,6 +6,8 @@ import {
   deleteProject,
   listProjects,
   getProjectStats,
+  listProjectTasks,
+  listProjectActivity,
 } from './service';
 import type { CreateProjectInput, UpdateProjectInput, GetProjectParams, ListProjectsQuery, ProjectParams } from './schemas';
 
@@ -68,5 +70,29 @@ export async function getProjectStatsController(req: Request, res: Response) {
   res.json({
     success: true,
     data: stats,
+  });
+}
+
+export async function listProjectTasksController(req: Request, res: Response) {
+  const { projectId } = req.params as ProjectParams;
+  const query = req.query;
+  const result = await listProjectTasks(projectId, query, req.user!.userId, req.user!.role as any);
+
+  res.json({
+    success: true,
+    data: result.data,
+    meta: result.meta,
+  });
+}
+
+export async function listProjectActivityController(req: Request, res: Response) {
+  const { projectId } = req.params as ProjectParams;
+  const query = req.query;
+  const result = await listProjectActivity(projectId, query, req.user!.userId, req.user!.role as any);
+
+  res.json({
+    success: true,
+    data: result.data,
+    meta: result.meta,
   });
 }

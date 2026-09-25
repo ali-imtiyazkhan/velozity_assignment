@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUserController, getUserController, updateUserController, deleteUserController, listUsersController } from './controller';
+import { createUserController, getUserController, getMeController, updateUserController, deleteUserController, listUsersController } from './controller';
 import { authMiddleware, requireAdmin } from '../auth/middleware';
 import { createUserSchema, updateUserSchema, getUserSchema, listUsersSchema } from './schemas';
 import { validate } from '../../shared/middleware/validate';
@@ -7,6 +7,9 @@ import { validate } from '../../shared/middleware/validate';
 const router = Router();
 
 router.use(authMiddleware);
+
+router.get('/me', getMeController);
+
 router.use(requireAdmin);
 
 router.post('/', validate(createUserSchema), createUserController);

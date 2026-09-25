@@ -22,6 +22,22 @@ export async function getUserController(req: Request, res: Response) {
   });
 }
 
+export async function getMeController(req: Request, res: Response) {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: { code: 'UNAUTHORIZED', message: 'Not authenticated' },
+    });
+  }
+
+  const user = await getUserById(req.user.userId);
+
+  res.json({
+    success: true,
+    data: { user },
+  });
+}
+
 export async function updateUserController(req: Request, res: Response) {
   const { id } = req.params as GetUserParams;
   const data = req.body as UpdateUserInput;

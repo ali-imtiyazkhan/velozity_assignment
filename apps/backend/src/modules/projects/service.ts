@@ -297,3 +297,151 @@ export async function getProjectStats(projectId: string, userId: string, userRol
     tasksByPriority: tasksByPriority.reduce((acc, t) => ({ ...acc, [t.priority]: t._count }), {}),
   };
 }
+
+export async function listProjectTasks(projectId: string, query: any, userId: string, userRole: Role) {
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+  });
+
+  if (!project) {
+    throw new NotFoundError('Project not found');
+  }
+
+  if (userRole === 'PROJECT_MANAGER' && project.managerId !== userId) {
+    throw new ForbiddenError('Not your project');
+  }
+
+  if (userRole === 'DEVELOPER') {
+    const assignment = await prisma.task.findFirst({
+      where: { projectId, assigneeId: userId },
+      select: { id: true },
+    });
+    if (!assignment) {
+      throw new ForbiddenError('Not assigned to this project');
+    }
+  }
+
+  const { page = 1, limit = 20, status, priority, assigneeId, isOverdue, search, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+  const skip = (page - 1) * limit;
+
+  const where: Record<string, unknown> = { projectId };
+
+  if (userRole === 'DEVELOPER') {
+    where.assigneeId = userId;
+  } else if (assigneeId) {
+    where.assigneeId = assigneeId;
+  }
+
+  if (status) where.status = status;
+  if (priority) where.priority = priority;
+  if (isOverdue !== undefined) where.isOverdue = isOverdue;
+
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  const [tasks, total] = await Promise.all([
+    prisma.task.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+      include: {
+        project: { select: { id: true, name: true } },
+        assignee: { select: { id: true, name: true, email: true, avatarUrl: true } },
+      },
+    }),
+    prisma.task.count({ where }),
+  ]);
+
+  return {
+    data: tasks,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
+
+export async function listProjectActivity(projectId: string, query: any, userId: string, userRole: Role) {
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+  });
+
+  if (!project) {
+    throw new NotFoundError('Project not found');
+  }
+
+  if (userRole === 'PROJECT_MANAGER' && project.managerId !== userId) {
+    throw new ForbiddenError('Not your project');
+  }
+
+  if (userRole === 'DEVELOPER') {
+    const assignment = await prisma.task.findFirst({
+      where: { projectId, assigneeId: userId },
+      select: { id: true },
+    });
+    if (!assignment) {
+      throw new ForbiddenError('Not assigned to this project');
+    }
+  }
+
+  const { page = 1, limit = 20, action, entityType, taskId, userId: filterUserId, startDate, endDate } = query;
+  const skip = (page - 1) * limit;
+
+  const where: Record<string, unknown> = { projectId };
+
+  if (userRole === 'DEVELOPER') {
+    const assignedTasks = await prisma.task.findMany({
+      where: { assigneeId: userId },
+      select: { id: true },
+    });
+    const taskIds = assignedTasks.map(t => t.id);
+    where.OR = [
+      { taskId: { in: taskIds } },
+      { userId },
+    ];
+  }
+
+  if (action) where.action = action;
+  if (entityType) where.entityType = entityType;
+  if (taskId) where.taskId = taskId;
+  if (filterUserId) where.userId = filterUserId;
+
+  if (startDate || endDate) {
+    const createdAtFilter: Record<string, Date> = {};
+    if (startDate) createdAtFilter.gte = new Date(startDate);
+    if (endDate) createdAtFilter.lte = new Date(endDate);
+    where.createdAt = createdAtFilter;
+  }
+
+  const [logs, total] = await Promise.all([
+    prisma.activityLog.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        project: { select: { id: true, name: true } },
+        task: { select: { id: true, title: true } },
+      },
+    }),
+    prisma.activityLog.count({ where }),
+  ]);
+
+  return {
+    data: logs,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
