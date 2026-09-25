@@ -21,4 +21,4 @@ RUN cd packages/db && bunx prisma generate
 EXPOSE 3001
 
 # Run migrations and start the server in production
-CMD sh -c "cd packages/db && bunx prisma migrate deploy && cd /app && bun run apps/backend/src/index.ts"
+CMD sh -c "cd packages/db && bunx prisma db push && cd /app && bun run apps/backend/src/index.ts"
